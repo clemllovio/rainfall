@@ -1,0 +1,7 @@
+We started by decompiling the level0 program to understand how it works.
+The program takes one argument from the command line. This argument is turned into a number using the atoi function.
+
+Then, the program checks if this number is equal to 0x1a7 (which is 423 in decimal).
+If the number is correct, the program runs /bin/sh using execve.
+
+This gives us access to a shell as the level1 user. From there, we can read the password for level1 using this command: `cat /home/user/level1/.pass`
