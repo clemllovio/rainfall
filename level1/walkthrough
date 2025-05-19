@@ -1,17 +1,25 @@
 We started by decompiling the level1 program to understand how it works.
 When the program runs, it asks us to enter some characters. These characters are stored in memory using the gets function.
 
-The gets function is dangerous because it does not check the size of the input, so we can use it to overflow the memory.
+The gets function is dangerous because it does not check the size of the input, so we can
+use it to overflow the memory.
 
-While analyzing the code, we found a run function. In this function, /bin/sh is executed with the rights of the level2 user.
+While analyzing the code, we found a run function. In this function, /bin/sh is executed
+with the rights of the level2 user.
 
-Our goal is to make the program call the run function. To do that, we will overflow the buffer and write the address of the run function at the right place on the stack. This way, when the program returns from main, it will jump to run.
+Our goal is to make the program call the run function. To do that, we will overflow the
+buffer and write the address of the run function at the right place on the stack. This
+way, when the program returns from main, it will jump to run.
 
-We need to write 76 characters (to fill the buffer and reach the return address), followed by the address of run, for example: `python -c 'print "A" * 76 + "\x44\x84\x04\x08"'`
+We need to write 76 characters (to fill the buffer and reach the return address),
+followed by the address of run, for example: 
+`python -c 'print "A" * 76 +"\x44\x84\x04\x08"'`
 
-At first, when we try this, the program crashes with a segmentation fault. This happens because the shell is launched, but there's no terminal input left for it.
+At first, when we try this, the program crashes with a segmentation fault. This happens
+because the shell is launched, but there's no terminal input left for it.
 
 To fix this, we use cat to keep the input open and interact with the shell: 
 `(python -c 'print "A" * 76 + "\x44\x84\x04\x08"' ; cat) | ./level1`
 
-From there, we can read the  password for level2 using this command: `cat /home/user/level1/.pass`
+From there, we can read the  password for level2 using this command: 
+`cat /home/user/level1/.pass`
