@@ -12,12 +12,13 @@ value directly. By using printf with the %n format specifier and with the addres
 part of the input, it  will write the number of characters printed so far into an address
 we provide.
 
-So the plan is, to put the address of m in our input, Add padding so that we print exactly 64 characters and use %n to write 64 into m.
+So the plan is, to put the address of m in our input, Add padding so that we print 
+exactly 64 characters and use %n to write 64 into m.
 
 To do that we are first going to use gdb to find the address of m (`info variables`)
 Then, we set a breakpoint at the printf call to analyze the stack. After hitting the
-breakpoint, we use : `x/100x $esp`. This lets us see where our input appears on the
+breakpoint, we use : `x/100x $sp`. This lets us see where our input appears on the
 stack, and how many arguments to skip to reach the %n.
 
 Now we have all the information to build the final command:
-`(python -c 'print "\x8c\x98\x04\x08" + "A" * 60 + "%4\$n"' ; echo "cat /home/user/level4/.pass") | ./level3`
+`(python -c 'print "\x8c\x98\x04\x08" + "A" * 60 + "%4$n"' ; echo "cat /home/user level4/.pass") | ./level3`

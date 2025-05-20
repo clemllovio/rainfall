@@ -1,0 +1,23 @@
+We started by decompiling the level4 program to understand how it works.
+It looks very similar to level3, but there is one important difference.
+
+The goal is still to make a global variable called m have a specific value, 
+so the program will execute system("/bin/cat /home/user/level5/.pass") and 
+give us the password to access the level5.
+
+But in this level, the condition checks if m is equal to a very large value : 0x1025544 (16930116)
+
+We still have a fgets to enter user input, and a printf that prints our input. 
+So again, we can use the %n format specifier to write a value into m.
+
+However, there’s a problem, fgets limits the input to 520 characters, 
+and printing 16930116 characters would go way beyond that.
+
+To solve this, we can use format string padding. Instead of printing millions of 
+characters manually, we use %<number>x to tell printf to pretend it printed that 
+many characters.
+
+The final command is:
+`(python -c 'print "\x10\x98\x04\x08" + "%16930112x" + "%12$n"'; cat) | ./level4`
+
+
