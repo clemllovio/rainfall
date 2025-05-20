@@ -1,0 +1,23 @@
+We started by decompiling the level5 program to understand how it works.
+In the main function, we see that it calls another function named n().
+
+Inside the n() function, three things happen:
+1 - It reads user input with fgets.
+2 - It prints the input using printf.
+3 - It calls exit() to end the program.
+
+By looking through the files we found another function called o(). This function is not
+used anywhere in the code, but if it is called, it runs: `system("/bin/sh")`
+This would give us a shell as the level6 user.
+
+Our goal is to call the o() function instead of exit().
+To do that, we will overwrite the exit() with the address of o(). This way, when exit()
+is called, it actually jumps to o() and opens a shell.
+
+`(python -c 'print "\xa4\x84\x04\x08" + "%134513824x" + "%4$n"' ; echo "cat /home/user/level6/.pass") | ./level5`
+
+- `\xa4\x84\x04\x08`: This is the address of exit(), written in little-endian format. It's placed at the beginning of the input so that it will be on the stack when printf is called.
+
+- `%134513824x`: This is the padding. It tells printf to "print" 134,513,824 characters. This makes printf think it has printed that many characters. This value + 4(4 bytes of the address written before) equals the address of the function o().
+
+- `%4$n`: This tells printf to write the number of characters printed so far (134,513,824) into the memory address found at the 4th position on the stack. Which, in this case, is the address of exit().

