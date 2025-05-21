@@ -1,0 +1,33 @@
+We started by decompiling the level6 program to understand how it works.
+
+In the main function, we see that it calls a function named m(), but this 
+function does nothing useful for us.
+
+However, while exploring the binary, we found another function called n().
+This function runs: `system("/bin/cat /home/user/level7/.pass")`
+So if we can make the program call n() instead of m(), it will print the
+password for level7.
+
+
+In main, two memory allocations happen:
+- A buffer of 64 bytes is allocated.
+- Then, 4 bytes are allocated to store a function pointer, which initially points to m().
+
+The program copies our input into the buffer using strcpy, and then it
+calls the function pointer.
+
+Because strcpy does not check the size of the input, we can overflow the
+buffer and overwrite the function pointer that’s stored just after it.
+
+So, instead of calling m(), the program will jump to n() and print the
+password.
+
+
+Using a buffer overflow pattern generator, we found that there is and
+offset of 72.
+
+So to overwrite it, we send 72 characters of padding and then the
+address of the n() function
+
+Final command :
+`./level6 $(python -c 'print "A" * 72 + "\x54\x84\x04\x08"')`
