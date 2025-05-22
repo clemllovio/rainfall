@@ -1,0 +1,32 @@
+We decompiled the level8 binary and found that it processes user input in a loop. 
+It supports four main commands:
+	- auth <input> → allocates 4 bytes for the global auth pointer and optionally copies some data
+	- reset → frees auth
+	- service <input> → sets the global service pointer using strdup
+	- login → checks if a value at auth + 0x20 is non-zero and opens a shell if it is
+
+Each time, the program prints the current address of the auth and service pointers.
+
+
+When you type auth (with a space), the program does:
+	- malloc(4) → allocates only 4 bytes and stores the pointer in auth
+	- Initializes the 4 bytes at auth to 0
+	- If your input is less than 31 bytes, it does: `strcpy(auth, local_8b);`
+Even though only 4 bytes were allocated, strcpy will happily overflow if you enter more data.
+This lets you overflow auth’s small buffer and corrupt memory right after it on the heap.
+
+Later, when you type login, the program checks if `*(int *)(auth + 0x20) != 0`
+Since auth only points to 4 bytes, accessing auth + 0x20 is an out-of-bounds read. 
+But we can make this work to our advantage.
+
+After auth is allocated with 4 bytes, the next allocation (strdup from the 
+service command) is placed right after it.
+
+This means the service pointer itself ends up stored at auth + 0x20.
+If service points to a valid string (non-null), the condition in login 
+becomes true and a shell is launched.
+
+./level8
+auth 
+service BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb
+login

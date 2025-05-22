@@ -14,10 +14,9 @@ while (1)
         auth = malloc(4);
         memset(auth, 0, 4);
 
-        // Only copy if input (after "auth ") is < 30 characters
         if (strlen(buffer + 5) < 30)
         {
-            strcpy(auth, buffer + 5);  // OVERFLOW RISK: auth is only 4 bytes
+            strcpy(auth, buffer + 5);
         }
     }
     else if (strncmp(buffer, "reset", 5) == 0)
@@ -26,11 +25,11 @@ while (1)
     }
     else if (strncmp(buffer, "service", 6) == 0)
     {
-        service = strdup(buffer + 7); // assuming space after "service"
+        service = strdup(buffer + 7);
     }
     else if (strncmp(buffer, "login", 5) == 0)
     {
-        if (*(int *)(auth + 0x20) == 0) // out-of-bounds read
+        if (*(int *)(auth + 0x20) == 0)
         {
             fwrite("Password:\n", 1, 10, stdout);
         }
