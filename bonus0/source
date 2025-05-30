@@ -47,6 +47,3 @@ void pp(char *param_1)
   strcat(param_1,local_20);
   return;
 }
-
-(python -c 'print "A" * 100'; sleep  1; python -c 'print "A" * 100') | ./bonus0
-
