@@ -1,30 +1,25 @@
 We started by decompiling the level2 program to understand how it works.
 In the main function, we see that it calls another function named p().
 
-Inside the p function, there is a call to gets, which lets us enter user input. Just like
-in the previous level, this function is unsafe because it doesn’t check how many
-characters we type. So we can overflow the memory to take control of the program flow.
+Inside the p function, there is a call to gets, which lets us enter an input. 
+Just like in the previous level, this function is unsafe because it doesn’t check how many characters we type. 
+So we can overflow the memory.
 
 However, there’s a difference from level1:
-In this level, after the call to gets, there is a condition that can prevent the function
-from returning normally. So if we just overflow and put our return address, it won’t work
-the condition will stop us.
+In this level, after the call to gets, there is a condition that can prevent the function from returning normally. 
+It checks the return address. If we try to directly jump to our shellcode on the stack, it won’t work.
+The condition will stop us because every address on the stack start with 0xb.
 
-To bypass that, we noticed in the code that the function strdup is located after the
-condition. So instead of returning directly, we can redirect the execution to strdup,
-which will then naturally return to where it should, allowing us to skip the condition
-and reach our shellcode.
+To bypass that, we noticed in the code that the function strdup is located after the condition. 
+This means we can put the shell code in the strdup, which copies our buffer into the heap.
+Once the check is passed and the function returns, we end up in the heap(where our shellcode is now written).
 
 Using gdb, we found that the buffer overflow offset is 80 bytes.
 
 So here's our plan:
-
-Start with shellcode a machine instructions that opens a shell.
-
+Start with shellcode (a machine instructions that opens a shell) which is 21 character.
 Add "A" * 59 to reach the return address.
-
-Overwrite the return address with the address of strdup, which is located after the
-condition.
+Overwrite the return address with the address where the strdup is writting.
 
 Here’s the final command we used:
 `(python -c 'print "\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80" + "A" * 59 + "\x08\xa0\x04\x08"'; echo "cat /home/user/level3/.pass") | ./level2`

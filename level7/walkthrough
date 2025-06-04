@@ -1,19 +1,12 @@
-We decompiled the level7 binary and found a hidden function called m()
-that is never called in main().
-This function prints the global variable c, which later contains the
-password for level8.
+We decompiled the level7 binary and found a hidden function called m() that is never called in main().
+This function prints the global variable c, which later contains the password for level8.
 
-In main(), two strcpy() calls copy argv[1] and argv[2] into heap buffers
-without any size checks.
-After that, the password is read into the variable c, and the program
-calls puts("~~").
+In main(), two strcpy() calls copy argv[1] and argv[2] into heap buffers without any size checks.
+After that, the password is read into the variable c, and the program calls puts("~~").
 
-Our goal is to call m() instead of puts(), right after the password is
-loaded.
+Our goal is to call m() instead of puts(), right after the password is loaded.
 
-To do that, we use the first strcpy() to overflow the buffer,
-overwrite the target of the second strcpy(), and place the address of m() where the address of puts() is stored.
+To do that, we use the first strcpy() to overflow the buffer, overwrite the target of the second strcpy(), and place the address of m() where the address of puts() is stored.
 This way, when puts() is called, the program jumps to m() and prints the password.
 
 `./level7 $(python -c 'print("A" * 20 + "\x28\x99\x04\x08")') $(python -c 'print("\xf4\x84\x04\x08")')`
-
