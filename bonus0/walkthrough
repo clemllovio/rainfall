@@ -1,4 +1,18 @@
+We decompiled the bonus0 binary to understand how it works.
+
+We found that the program uses a function pp() which calls another function p() twice to get user input, and then copies and concatenates that input into a buffer.
+
+pp() calls the function p() 2 times.
+Each time, p() reads from stdin, but it only copies 20 bytes into the buffer using strncpy.
+If the input is exactly 20 bytes long, strncpy does not add a \0.
+So when strcat is later called, it will keep reading past the end of the first input. 
+Because the two strcpy copy right next to each other on the stack, strcat will append both input 1 and input 2, plus a space, and then input 2 again.
+The buffer passed to strcat is limited to 54 characters, so we can exploit this to overflow the buffer.
+
+Then we can send our shellcode in the first input minus one character, because our shellcode is 21 bytes long.
+In the second input, we are going to send the last character of our shellcode, some padding, the address pointing to our shellcode and one more character of padding (that will be only written one time).
+The address corresponds to where the strcpy is writting.
+
 `(python -c 'print "\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd"';  
 python -c 'print "\x80" + "A" * 13 + "\x36\xf7\xff\xbf" + "A"';  cat) 
 | ./bonus0`
-
