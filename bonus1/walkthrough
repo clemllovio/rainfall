@@ -1,4 +1,18 @@
-./bonus1 -1073741812 $(python -c 'print "A" * 40 + "\x46\x4c\x4f\x57"')
-$ cat /home/user/bonus2/.pass
+We decompiled the bonus1 binary to understand how it works.
 
--1073741812 = 48
+The main function takes two arguments.
+It uses atoi(argv[1]) to convert the first argument to an integer and stores it in local_14.
+If the value is less than 10, the program calls memcpy to copy local_14 * 4 bytes from argv[2] into local_3c (a buffer of 40 bytes).
+
+The program doesn’t check if local_14 * 4 exceeds the size of the buffer. 
+So we can overflow it.
+By passing -1073741812 as the first argument results in memcpy copying 48 bytes.
+	-> -1073741812 * 4 interpreted as an unsigned value due to integer underflow.
+
+After the memcpy, it checks if local_14 == 0x574F4C46.
+So we provide as argv[2]: 40 padding bytes ("A" * 40) followed by the bytes "\x46\x4c\x4f\x57".
+This overwrites local_14, which is right next to local_3c on the stack, with the value 0x574F4C46.
+
+Now the condition is true, and the program executes: `execl("/bin/sh","sh",0)`
+
+Here is the full command : `./bonus1 -1073741812 $(python -c 'print "A" * 40 + "\x46\x4c\x4f\x57"')`
