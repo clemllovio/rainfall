@@ -1,0 +1,44 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
+class N {
+private:
+    char annotation[0x64];
+    int value;
+
+public:
+    N(int val) : value(val) {
+    }
+
+    void setAnnotation(const char* str) {
+        std::memcpy(annotation, str, std::strlen(str));
+    }
+
+    int operator+(const N& other) const {
+        return this->value + other.value;
+    }
+
+    int operator-(const N& other) const {
+        return this->value - other.value;
+    }
+
+    virtual void invoke(N* other) {
+        // We can override this in a derived class
+        std::cout << "invoke called with value: " << (*this + *other) << std::endl;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::exit(1);
+    }
+
+    N* obj1 = new N(5);
+    N* obj2 = new N(6);
+
+    obj1->setAnnotation(argv[1]);
+    obj2->invoke(obj1);
+
+    return 0;
+}

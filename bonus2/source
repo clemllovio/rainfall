@@ -1,108 +1,90 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-// Global variable to track language preference
-int language = 0; // 0 = English (default), 1 = Finnish, 2 = Dutch
-
-void greetuser(void);
-
-int main(int argc, char *argv[])
-{
-    char username[40];
-    char password[36];  // Note: This suggests password handling
-    char *lang_env;
-    
-    // Check if exactly 3 arguments were provided (program name + 2 args)
-    if (argc == 3) {
-        // Clear the buffers
-        memset(username, 0, sizeof(username));
-        memset(password, 0, sizeof(password));
-        
-        // Copy command line arguments
-        strncpy(username, argv[1], 40);   // First argument: username
-        strncpy(password, argv[2], 32);   // Second argument: password
-        
-        // Check environment variable for language setting
-        lang_env = getenv("LANG");
-        if (lang_env != NULL) {
-            // Check first 2 characters of LANG environment variable
-            if (memcmp(lang_env, "fi", 2) == 0) {  // Finnish
-                language = 1;
-            }
-            else if (memcmp(lang_env, "nl", 2) == 0) {  // Dutch
-                language = 2;
-            }
-            // Default remains English (language = 0)
-        }
-        
-        // The original code copies username to stack in a complex way
-        // This appears to be preparing data for the greeting function
-        
-        greetuser();
-        return 0;
-    }
-    else {
-        // Wrong number of arguments
-        return 1;
-    }
-}
-
 void greetuser(void)
+
 {
-    char greeting_part1[8];  // First part of greeting
-    char greeting_part2[64]; // Second part of greeting
-    
-    if (language == 1) {  // Finnish
-        // "Hyvää" (Good in Finnish)
-        greeting_part1[0] = 'H';
-        greeting_part1[1] = 'y';
-        greeting_part1[2] = 'v';
-        greeting_part1[3] = 0xC3;  // UTF-8 encoding for 'ä'
-        greeting_part1[4] = 0xA4;  // UTF-8 encoding for 'ä'
-        greeting_part1[5] = 0xC3;  // UTF-8 encoding for 'ä'
-        greeting_part1[6] = 0xA4;  // UTF-8 encoding for 'ä'
-        greeting_part1[7] = ' ';
-        
-        strncpy(greeting_part2, "päivää ", 11);  // "day" in Finnish
-    }
-    else if (language == 2) {  // Dutch
-        // "Goede" (Good in Dutch)
-        strncpy(greeting_part1, "Goed", 4);
-        greeting_part1[4] = 'e';
-        greeting_part1[5] = 'm';
-        greeting_part1[6] = 'i';
-        greeting_part1[7] = 'd';
-        
-        strncpy(greeting_part2, "dag!", 4);  // "day!" in Dutch
-        greeting_part2[4] = ' ';
-        greeting_part2[5] = '\0';
-    }
-    else {  // English (default)
-        strncpy(greeting_part1, "Hell", 4);
-        // This appears to be "Hello" - the 'o' character is stored as 0x206f
-        greeting_part1[4] = 'o';
-        greeting_part1[5] = ' ';
-        greeting_part1[6] = '\0';
-    }
-    
-    // Concatenate with username (accessed from stack)
-    // Original code: strcat(greeting_part1, &stack0x00000004);
-    // This suggests it's concatenating with the username from earlier
-    
-    // Print the complete greeting
-    puts(greeting_part1);
+  char local_4c [4];
+  undefined4 local_48;
+  char local_44 [64];
+  
+  if (language == 1) {
+    local_4c[0] = 'H';
+    local_4c[1] = 'y';
+    local_4c[2] = 'v';
+    local_4c[3] = -0x3d;
+    local_48._0_1_ = -0x5c;
+    local_48._1_1_ = -0x3d;
+    local_48._2_1_ = -0x5c;
+    local_48._3_1_ = ' ';
+    builtin_strncpy(local_44,"päivää ",0xb);
+  }
+  else if (language == 2) {
+    builtin_strncpy(local_4c,"Goed",4);
+    local_48._0_1_ = 'e';
+    local_48._1_1_ = 'm';
+    local_48._2_1_ = 'i';
+    local_48._3_1_ = 'd';
+    builtin_strncpy(local_44,"dag!",4);
+    local_44[4] = ' ';
+    local_44[5] = '\0';
+  }
+  else if (language == 0) {
+    builtin_strncpy(local_4c,"Hell",4);
+    local_48._0_3_ = 0x206f;
+  }
+  strcat(local_4c,&stack0x00000004);
+  puts(local_4c);
+  return;
 }
 
-/*
-SUMMARY:
-This program:
-1. Takes 2 command line arguments (username and password)
-2. Checks the LANG environment variable to determine language
-3. Prints a greeting in the appropriate language:
-   - Finnish: "Hyvää päivää [username]" (Good day)
-   - Dutch: "Goedemiddag [username]" (Good afternoon)  
-   - English: "Hello [username]"
 
-Usage: ./program <username> <password>
-*/
+
+undefined4 main(int param_1,int param_2)
+
+{
+  undefined4 uVar1;
+  int iVar2;
+  char *pcVar3;
+  undefined4 *puVar4;
+  byte bVar5;
+  char local_60 [40];
+  char acStack_38 [36];
+  char *local_14;
+  
+  bVar5 = 0;
+  if (param_1 == 3) {
+    pcVar3 = local_60;
+    for (iVar2 = 0x13; iVar2 != 0; iVar2 = iVar2 + -1) {
+      pcVar3[0] = '\0';
+      pcVar3[1] = '\0';
+      pcVar3[2] = '\0';
+      pcVar3[3] = '\0';
+      pcVar3 = pcVar3 + 4;
+    }
+    strncpy(local_60,*(char **)(param_2 + 4),0x28);
+    strncpy(acStack_38,*(char **)(param_2 + 8),0x20);
+    local_14 = getenv("LANG");
+    if (local_14 != (char *)0x0) {
+      iVar2 = memcmp(local_14,&DAT_0804873d,2);
+      if (iVar2 == 0) {
+        language = 1;
+      }
+      else {
+        iVar2 = memcmp(local_14,&DAT_08048740,2);
+        if (iVar2 == 0) {
+          language = 2;
+        }
+      }
+    }
+    pcVar3 = local_60;
+    puVar4 = (undefined4 *)&stack0xffffff50;
+    for (iVar2 = 0x13; iVar2 != 0; iVar2 = iVar2 + -1) {
+      *puVar4 = *(undefined4 *)pcVar3;
+      pcVar3 = pcVar3 + ((uint)bVar5 * -2 + 1) * 4;
+      puVar4 = puVar4 + (uint)bVar5 * -2 + 1;
+    }
+    uVar1 = greetuser();
+  }
+  else {
+    uVar1 = 1;
+  }
+  return uVar1;
+}

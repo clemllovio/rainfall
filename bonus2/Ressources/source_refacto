@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int language = 0;
+
+void greetuser(void);
+
+int main(int argc, char *argv[])
+{
+    char username[40];
+    char password[36];
+    char *lang_env;
+    
+    if (argc == 3) {
+        memset(username, 0, sizeof(username));
+        memset(password, 0, sizeof(password));
+        
+        strncpy(username, argv[1], 40);
+        strncpy(password, argv[2], 32);
+        
+        lang_env = getenv("LANG");
+        if (lang_env != NULL) {
+            if (memcmp(lang_env, "fi", 2) == 0) {
+                language = 1;
+            }
+            else if (memcmp(lang_env, "nl", 2) == 0) {
+                language = 2;
+            }
+            // Default remains English (language = 0)
+        }
+        greetuser();
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+void greetuser(void)
+{
+    char greeting_part1[8];
+    char greeting_part2[64];
+    
+    if (language == 1) {
+        greeting_part1[0] = 'H';
+        greeting_part1[1] = 'y';
+        greeting_part1[2] = 'v';
+        greeting_part1[3] = 0xC3;
+        greeting_part1[4] = 0xA4;
+        greeting_part1[5] = 0xC3;
+        greeting_part1[6] = 0xA4;
+        greeting_part1[7] = ' ';
+        
+        strncpy(greeting_part2, "päivää ", 11);
+    }
+    else if (language == 2) {
+        strncpy(greeting_part1, "Goed", 4);
+        greeting_part1[4] = 'e';
+        greeting_part1[5] = 'm';
+        greeting_part1[6] = 'i';
+        greeting_part1[7] = 'd';
+        
+        strncpy(greeting_part2, "dag!", 4);
+        greeting_part2[4] = ' ';
+        greeting_part2[5] = '\0';
+    }
+    else {
+        strncpy(greeting_part1, "Hell", 4);
+        greeting_part1[4] = 'o';
+        greeting_part1[5] = ' ';
+        greeting_part1[6] = '\0';
+    }
+    
+    puts(greeting_part1);
+}
