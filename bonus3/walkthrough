@@ -1,1 +1,16 @@
+We decompiled bonus3 binary to understand how it works.
+The main function takes two arguments(ac and argv).
+
+First, the program open and read from the file /home/user/end/.pass.
+Then it calls atoi(argv[1]) and stores the result in a variable (iVar2).
+This value is used as an index to insert a \0 into the password buffer
+
+After that, the program compares the password to our input with strcmp.
+If the two strings match, it executes: `execl("/bin/sh","sh",0)`
+
+If we pass an empty string as our first argument:
+	-> atoi("") returns 0
+	-> In the password the character at index 0 will be replaced by a \0
+	-> Now strcmp("", "") returns 0
+
 ./bonus3 ""
